@@ -49,7 +49,8 @@ class LoginController extends GetxController {
         loading = false;
         update();
 
-        Get.offAllNamed('/asn');
+        Get.offAllNamed('/po-cart');
+
         return;
       }
 

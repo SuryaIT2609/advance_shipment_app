@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:po_asn_app/Pages/po_pending_page.dart';
 import '../controller/create_asn_controller.dart';
 
 class CreateASNPage extends StatelessWidget {
@@ -9,71 +8,35 @@ class CreateASNPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CreateASNController>(
-      init: CreateASNController(),
       builder: (c) {
         return Scaffold(
           backgroundColor: const Color(0xFFF2F4F8),
 
-          // ---------------- APP BAR ----------------
           appBar: AppBar(
             backgroundColor: const Color(0xFF3B6EBF),
             title: const Text("Advance Shipment Notice",
                 style: TextStyle(color: Colors.white)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Get.back(),
+              onPressed: Get.back,
             ),
           ),
 
-          // ---------------- BODY ----------------
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                // ===== HEADER SECTION =====
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _sectionTitle("Items"),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Get.dialog(
-                          POPendingDialog(
-                            onSelect: (row) {
-                              Get.find<CreateASNController>().addItemFromPO(row);
-                            },
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.shopping_cart),
-                      label: const Text("Get Items from PO"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B6EBF),
-                      ),
-                    ),
+                _title("ASN Details"),
+                _field("Supplier Invoice No", c.supplierInvoiceNo),
+                _field("Supplier Invoice Date", c.supplierInvoiceDate),
+                _field("Estimated Arrival Date", c.estimatedArrivalDate),
+                _field("LLR No", c.llrNo),
+                _field("Transport Name", c.transporter),
 
-
-
-                  ],
-                ),
-
-
-
-
-                _sectionTitle("ASN Details"),
-
-                _textField("Supplier Invoice No", c.supplierInvoiceNo),
-                _textField("Supplier Invoice Date", c.supplierInvoiceDate),
-                _textField("Estimated Arrival Date", c.estimatedArrivalDate),
-                _textField("LLR No", c.llrNo),
-                _textField("Transport Name", c.transporter),
-
-                const SizedBox(height: 24),
-
-                // ===== ITEM TABLE =====
-                _sectionTitle("Items"),
+                const SizedBox(height: 20),
+                _title("Items"),
 
                 Container(
                   decoration: BoxDecoration(
@@ -83,29 +46,16 @@ class CreateASNPage extends StatelessWidget {
                   child: Column(
                     children: [
                       _tableHeader(),
-                      ...List.generate(c.items.length, (index) {
-                        final row = c.items[index];
-                        return _itemRow(c, row, index);
+                      ...List.generate(c.items.length, (i) {
+                        final row = c.items[i];
+                        return _itemRow(c, row, i);
                       }),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 12),
-
-                // ADD ITEM
-                // Align(
-                //   alignment: Alignment.centerRight,
-                //   child: TextButton.icon(
-                //     onPressed: c.addItem,
-                //     icon: const Icon(Icons.add),
-                //     label: const Text("Add Item"),
-                //   ),
-                // ),
-
                 const SizedBox(height: 30),
 
-                // ===== ACTION BUTTONS =====
                 Row(
                   children: [
                     Expanded(
@@ -113,8 +63,8 @@ class CreateASNPage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                         ),
-                        onPressed: () {},
-                        child: const Text("Save Draft"),
+                        onPressed: Get.back,
+                        child: const Text("Cancel"),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -123,8 +73,10 @@ class CreateASNPage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF3B6EBF),
                         ),
-                        onPressed: () {},
-                        child: const Text("Submit"),
+                        onPressed: () {
+                          // NEXT STEP: SUBMIT ASN API
+                        },
+                        child: const Text("Submit ASN"),
                       ),
                     ),
                   ],
@@ -137,26 +89,20 @@ class CreateASNPage extends StatelessWidget {
     );
   }
 
-  // ---------------- UI HELPERS ----------------
+  // ================= UI HELPERS =================
 
-  Widget _sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        title,
+  Widget _title(String t) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Text(t,
         style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
+            fontSize: 18, fontWeight: FontWeight.bold)),
+  );
 
-  Widget _textField(String label, TextEditingController controller) {
+  Widget _field(String label, TextEditingController c) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
+      child: TextField(
+        controller: c,
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(
@@ -188,9 +134,9 @@ class CreateASNPage extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: Row(
         children: [
-          Expanded(child: TextField(controller: row.itemCode)),
-          Expanded(child: TextField(controller: row.poQty)),
-          Expanded(child: TextField(controller: row.poNumber)),
+          Expanded(child: TextField(controller: row.itemCode, readOnly: true)),
+          Expanded(child: TextField(controller: row.poQty, readOnly: true)),
+          Expanded(child: TextField(controller: row.poNumber, readOnly: true)),
           Expanded(child: TextField(controller: row.asnQty)),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
