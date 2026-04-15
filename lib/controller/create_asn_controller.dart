@@ -17,7 +17,6 @@ class CreateASNController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // ✅ RECEIVE DATA FROM PO LIST PAGE
     final args = Get.arguments;
 
     if (args != null && args is List) {

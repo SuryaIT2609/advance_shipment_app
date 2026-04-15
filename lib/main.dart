@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:po_asn_app/AuthService.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'routes.dart';
 import 'controller/login_controller.dart';
@@ -21,14 +23,19 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/auth/login',
+      initialRoute: '/splash',
       getPages: routes,
     );
   }

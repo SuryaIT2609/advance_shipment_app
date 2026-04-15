@@ -9,11 +9,11 @@ class POPendingController extends GetxController {
   bool loading = false;
   List<Map<String, dynamic>> items = [];
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchCartItems();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   fetchCartItems();
+  // }
 
   // ================= FETCH CART =================
   Future<void> fetchCartItems() async {
