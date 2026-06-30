@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../AuthService.dart';
+import '../secure storeage.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -19,14 +21,38 @@ class _SplashPageState extends State<SplashPage> {
     _checkSession();
   }
 
+  // Future<void> _checkSession() async {
+  //   final pref = await SharedPreferences.getInstance();
+  //   String? session = pref.getString("sid");
+  //   if (session != null) {
+  //     AuthService.sessionId = session;
+  //     Get.offAllNamed('/po-cart');
+  //   } else {
+  //     Get.offAllNamed('/auth/login');
+  //   }
+  // }
+
   Future<void> _checkSession() async {
-    final pref = await SharedPreferences.getInstance();
-    String? session = pref.getString("sid");
-    if (session != null) {
-      AuthService.sessionId = session;
-      Get.offAllNamed('/po-cart');
+    if (kIsWeb) {
+      final storage = SecureStorageService();
+      String? apiKey = await storage.getApiKey();
+      String? apiSecret = await storage.getApiSecret();
+      print("api key$apiKey");
+      print(apiSecret);
+      if (apiKey != null && apiSecret != null) {
+        Get.offAllNamed('/po-cart');
+      } else {
+        Get.offAllNamed('/auth/login');
+      }
     } else {
-      Get.offAllNamed('/auth/login');
+      final pref = await SharedPreferences.getInstance();
+      String? session = pref.getString("sid");
+      if (session != null) {
+        AuthService.sessionId = session;
+        Get.offAllNamed('/po-cart');
+      } else {
+        Get.offAllNamed('/auth/login');
+      }
     }
   }
 

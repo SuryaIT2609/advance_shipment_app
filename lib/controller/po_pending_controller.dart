@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String baseUrl = "http://208.115.124.12:8000";
+import '../constant.dart';
 
 class POPendingController extends GetxController {
   bool loading = false;
@@ -49,10 +49,7 @@ class POPendingController extends GetxController {
 
       final res = await http.post(
         Uri.parse("$baseUrl/api/method/update_po_cart_item_status"),
-        headers: {
-          "Content-Type": "application/json",
-          "Cookie": "sid=$sid",
-        },
+        headers: {"Content-Type": "application/json", "Cookie": "sid=$sid"},
         body: jsonEncode({"cart_item_id": cartItemId}),
       );
 

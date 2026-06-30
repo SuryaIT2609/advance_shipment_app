@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../AuthService.dart';
-import '../controller/asn_controller.dart';
+import '../constant.dart';
 import '../model/autoPoModel.dart';
 import '../model/poPendingItemModel.dart';
 import '../secure storeage.dart';
@@ -37,7 +37,7 @@ class AutoPoService {
 
     String v = decoded["message"][0]["company"];
     String v2 = decoded["message"][0]["supplier"];
-    print("$v, $v2");
+
     if (decoded["message"] == null) return null;
 
     return {"company": v, "supplier": v2};
@@ -47,9 +47,6 @@ class AutoPoService {
     final storage = SecureStorageService();
     String? apiKey = await storage.getApiKey();
     String? apiSecret = await storage.getApiSecret();
-
-    print("key: $apiKey");
-    print("sec:$apiSecret");
 
     if (apiKey == null || apiSecret == null) return null;
 
@@ -64,7 +61,6 @@ class AutoPoService {
         "Authorization": "token $apiKey:$apiSecret",
       },
     );
-
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch user company");
     }
@@ -77,8 +73,6 @@ class AutoPoService {
 
     String company = decoded["message"][0]["company"];
     String supplier = decoded["message"][0]["supplier"];
-
-    print("$company, $supplier");
 
     return {"company": company, "supplier": supplier};
   }
@@ -223,7 +217,10 @@ class AutoPoService {
       throw Exception("Failed to update cart status");
     }
     print(response.body);
+
     final decoded = jsonDecode(response.body);
+    print("mesage${decoded["message"]}");
+
     return decoded["message"] != null;
   }
 
@@ -296,6 +293,46 @@ class AutoPoService {
     }
 
     return null;
+  }
+
+  Future<bool> updatePoItemCustomDate({
+    required List<Map<String, dynamic>> items,
+  }) async {
+    final storage = SecureStorageService();
+
+    String? apiKey = await storage.getApiKey();
+    String? apiSecret = await storage.getApiSecret();
+
+    if (!kIsWeb && AuthService.sessionId == null) {
+      return false;
+    }
+
+    final response = await http.post(
+      Uri.parse(
+        "$baseUrl/api/method/my_api_app.api_methods.smart_order_po.update_po_item_custom_date",
+      ),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+
+        if (kIsWeb) "Authorization": "token $apiKey:$apiSecret",
+
+        if (!kIsWeb) "Cookie": "sid=${AuthService.sessionId!}",
+      },
+
+      body: jsonEncode({"items": items}),
+    );
+
+    print("bulk update response: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      if (data["message"]?["status"] == "success") {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   Future<String?> createASN({

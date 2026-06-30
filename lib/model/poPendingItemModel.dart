@@ -9,7 +9,7 @@ class PurchaseOrderItemModel {
   double? grnQty;
   double? transitQty;
   double? pendingQty;
-
+  String? poDate;
   String? uom;
   String? warehouse;
   String? poNumber;
@@ -23,6 +23,7 @@ class PurchaseOrderItemModel {
   String? glQty;
   double? conversionFactor;
   double? rate;
+  String? dispatchDate;
 
   // ✅ Editable quantity controller
   late TextEditingController editableQtyController;
@@ -41,6 +42,7 @@ class PurchaseOrderItemModel {
     this.currency,
     this.company,
     this.supplier,
+    this.poDate,
     this.buyingPriceList,
     this.conversionFactor,
     this.rate,
@@ -48,6 +50,7 @@ class PurchaseOrderItemModel {
     this.glQty,
     this.packetQtyKg,
     this.packetQtyNos,
+    this.dispatchDate,
   }) {
     // ✅ Initialize controller with default pending qty
     editableQtyController = TextEditingController(
@@ -62,10 +65,11 @@ class PurchaseOrderItemModel {
       poiName: json['poi_name'],
       itemCode: json['item_code'],
       itemName: json['item_name'],
+      poDate: json['transaction_date'],
+      dispatchDate: json['dispatch_date'],
       poQty: (json['po_qty'] ?? 0).toDouble(),
       grnQty: (json['grn_qty'] ?? 0).toDouble(),
       transitQty: (json['transit_qty'] ?? 0).toDouble(),
-
       boxQty: (json['custom_box_qty'] ?? 0).toDouble(),
       packetQtyNos: (json['custom_1_packet_qty_nos'] ?? 0).toDouble(),
       packetQtyKg: (json['custom_1_packet_qty_kg'] ?? 0).toDouble(),

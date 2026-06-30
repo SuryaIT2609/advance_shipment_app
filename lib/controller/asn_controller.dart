@@ -6,10 +6,9 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constant.dart';
 import '../model/asn_report_model.dart';
 import '../secure storeage.dart';
-
-const String baseUrl = "http://208.115.124.12:8000";
 
 class ASNController extends GetxController {
   bool loading = true;

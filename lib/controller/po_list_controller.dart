@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constant.dart';
+import '../model/autoPoModel.dart';
 import '../model/poPendingItemModel.dart';
 import '../secure storeage.dart';
 import '../service/service.dart';
-
-const String baseUrl = "http://208.115.124.12:8000";
 
 class POListController extends GetxController {
   bool loading = false;
@@ -24,6 +24,7 @@ class POListController extends GetxController {
   TextEditingController estDate = TextEditingController();
   TextEditingController llrNO = TextEditingController();
   TextEditingController transportName = TextEditingController();
+  List<Map<String, dynamic>> pendingDateUpdates = [];
 
   // initLoad() {
   //   supplierInvoiceNumber.text = "1233309";
@@ -55,6 +56,7 @@ class POListController extends GetxController {
 
       final decoded = jsonDecode(res.body);
 
+      print(res.body);
       items = (decoded["message"] as List)
           .map((e) => PurchaseOrderItemModel.fromJson(e))
           .toList();
@@ -118,11 +120,44 @@ class POListController extends GetxController {
       transporter: transportName.text,
     );
     clearSelection();
-    await fetchPOItems();
+
     print(value);
     if (value != null) {
       return true;
     }
     return false;
+  }
+
+  Future<void> updateDispatchDate({
+    required List<Map<String, dynamic>> items,
+  }) async {
+    loading = true;
+    update();
+
+    bool value = await AutoPoService().updatePoItemCustomDate(items: items);
+
+    loading = false;
+    update();
+
+    if (value) {
+      clearSelection();
+      await fetchPOItems();
+      Get.snackbar(
+        "Success",
+        "Dispatch Date Updated Successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } else {
+      clearSelection();
+      Get.snackbar(
+        "Error",
+        "Failed to Update Dispatch Date",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    }
   }
 }

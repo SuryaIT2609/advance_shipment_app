@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,6 +119,7 @@ class SmartPoController extends GetxController {
         userData = await AutoPoService().getUserCompany(user: userId);
       }
 
+      // print("usr d$userData");
       if (userData == null) {
         loading = false;
         update();
@@ -161,7 +164,7 @@ class SmartPoController extends GetxController {
     update();
     String? value = await AutoPoService().createPurchaseOrder(orderItems: list);
 
-    print("valu: $value");
+    // print("valu: $value");
 
     if (value != null) {
       for (AutoPoItem itm in list) {
@@ -172,15 +175,74 @@ class SmartPoController extends GetxController {
             lastPoId: value,
             requestedQty: 0,
           );
-          print(msg);
         }
       }
+
+      Get.snackbar(
+        "Success",
+        "Accepted Successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
+      loading = false;
       supplierNewOrderCartList.clear();
       await fetchCartItems();
       update();
+    } else {
+      loading = false;
+      supplierNewOrderCartList.clear();
+      Get.snackbar(
+        "Failed",
+        "Failed to Accept Items",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
+      update();
     }
-    loading = false;
-    await fetchCartItems();
+  }
+
+  // --- Search for New Orders ---
+  void searchNewOrders(String query) {
+    final lowercaseQuery = query.toLowerCase();
+
+    if (query.isEmpty) {
+      filteredCartItemsList = List.from(cartItemsList);
+    } else {
+      filteredCartItemsList = cartItemsList.where((item) {
+        // Search in both Item Code and Item Name
+        final codeMatch = (item.itemCode ?? "").toLowerCase().contains(
+          lowercaseQuery,
+        );
+        final nameMatch = (item.itemName ?? "").toLowerCase().contains(
+          lowercaseQuery,
+        );
+
+        return codeMatch || nameMatch;
+      }).toList();
+    }
+    update();
+  }
+
+  // --- Search for Item Master (If you use autoPoItems) ---
+  void searchItemMaster(String query) {
+    final lowercaseQuery = query.toLowerCase();
+
+    if (query.isEmpty) {
+      filteredAutoPoItems = List.from(autoPoItems);
+    } else {
+      filteredAutoPoItems = autoPoItems.where((item) {
+        final codeMatch = (item.itemCode ?? "").toLowerCase().contains(
+          lowercaseQuery,
+        );
+        final nameMatch = (item.itemName ?? "").toLowerCase().contains(
+          lowercaseQuery,
+        );
+
+        return codeMatch || nameMatch;
+      }).toList();
+    }
     update();
   }
 }

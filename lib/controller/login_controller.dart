@@ -5,10 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:po_asn_app/AuthService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
+import '../constant.dart';
 import '../secure storeage.dart';
-
-// const String baseUrl = "http://208.115.124.12:8000";
-const String baseUrl = "http://208.115.124.12:8000";
 
 class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -138,7 +136,7 @@ class LoginController extends GetxController {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("sid", sid);
-        print("trim ; ${emailController.text.trim()}");
+        // print("trim ; ${emailController.text.trim()}");
         print(emailController.text);
         await prefs.setString("userId", emailController.text.trim());
         AuthService.sessionId = sid;
@@ -157,13 +155,14 @@ class LoginController extends GetxController {
   }
 
   Future<void> webLogin() async {
-
     if (!formKey.currentState!.validate()) return;
     loading = true;
     update();
 
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
+    // print("email ${email}");
+    // print("pass $password");
     final storage = SecureStorageService();
 
     final response = await http.post(
